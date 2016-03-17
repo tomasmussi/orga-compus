@@ -3,6 +3,8 @@
 #define _MATRIX_H_
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct matrix matrix_t;
 

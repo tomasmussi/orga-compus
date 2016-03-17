@@ -7,6 +7,8 @@
 
 #define MAX_SIZE 10
 
+#define DEBUG_MODE true
+
 void show_help(const char *arg) {
 	if ((strcmp(arg, "-h") == 0) || (strcmp(arg, "--help") == 0)) {
 		printf("Usage:\n\ttpo -h\n\ttp0 -V\n\ttp0 < in_file > out_file 2> err_file\n\n");
@@ -18,8 +20,6 @@ void show_help(const char *arg) {
 }
 
 void tokenizarLinea(char* linea, int indice) {
-
-	bool DEBUG_MODE = true;
 
 	// Copia de la linea original para contar elementos
 	char copiaLinea[indice + 1];
@@ -56,6 +56,13 @@ void tokenizarLinea(char* linea, int indice) {
 		printf("La dimension no concuerda con la cantidad de elementos de la linea.\n");
 		return;
 	}
+
+	/* Se deberian cargar las matrices */
+	matrix_t* matrizA = create_matrix(dimension, dimension);
+
+	matrix_multiply(NULL, NULL);
+
+	destroy_matrix(matrizA);
 
 	printf("\n\n");
 
@@ -117,7 +124,8 @@ int main(int argc, char *argv[]) {
 	/* Habria que chequear que si se corre sin parámetros, viene de stdin */
 
 	/* ./tp0 prueba.txt */
-	printf("\n\nSe abre archivo de texto ");
+
+	printf("\nSe abre archivo de texto ");
     
 	printf("%s \n\n", argv[1]);
 	FILE* archivo = fopen(argv[1], "r");
@@ -141,6 +149,8 @@ int main(int argc, char *argv[]) {
 	fclose(archivo);
 
 	printf("Termina el programa \n");
+
+
 	return 0;
 }
 
