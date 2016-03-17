@@ -80,9 +80,18 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 
 	if (DEBUG_MODE) {
 		for (int indice = 0; indice < cantidadElementosNueva; indice++) {
-			printf("%f ", m3->array[indice]);
+			printf("%.1f ", m3->array[indice]);
 		}
 	}
-	
+
 	return m3;
+}
+
+
+void load_matrix(matrix_t* m, double* elements) {
+
+	for (int i = 0; i < m->rows * m->cols; i++) {
+		m->array[i] = elements[i];
+	}
+
 }

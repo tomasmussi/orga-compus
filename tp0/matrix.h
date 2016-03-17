@@ -32,4 +32,10 @@ int print_matrix(FILE* fp, matrix_t* m);
  * */
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2);
 
+/* Carga la matriz con los elementos pasados por parametro
+ * PRE: la matriz fue creada
+ * POST: 
+ * */
+void load_matrix(matrix_t* m, double* elements);
+
 #endif // _MATRIX_H_
