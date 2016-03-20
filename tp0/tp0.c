@@ -57,7 +57,7 @@ bool lineaEsValida(char* linea, int indice) {
 
 void tokenizarLinea(char* linea, int indice) {
 	if (!lineaEsValida(linea, indice)) {
-		printf("\tLa dimension no concuerda con la cantidad de elementos de la linea.\n");
+		fprintf(stderr, "\tLa dimension no concuerda con la cantidad de elementos de la linea.\n");
 		return;
 	} 
 	int cantidadElementos = 0;

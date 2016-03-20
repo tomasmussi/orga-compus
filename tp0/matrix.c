@@ -11,18 +11,18 @@ struct matrix {
 matrix_t* create_matrix(size_t rows, size_t cols) {
 	matrix_t* matriz = (matrix_t*) malloc( sizeof(matrix_t) );
 	if (matriz == NULL) {
-		printf("No se ha podido crear la matriz\n");
+		fprintf(stderr, "No se ha podido crear la matriz\n");
 		return NULL;
 	}
 	if (rows == 0 || cols == 0) {
-		printf("Dimensiones invalidas, no se ha podido crear la matriz\n");
+		fprintf(stderr, "Dimensiones invalidas, no se ha podido crear la matriz\n");
 		return NULL;
 	}
 	matriz->rows = rows;
 	matriz->cols = cols;
 	matriz->array = (double*) malloc( rows * cols * sizeof(double) );
 	if (matriz->array == NULL) {
-		printf("No se ha podido crear la matriz\n");
+		fprintf(stderr, "No se ha podido crear la matriz\n");
 		free(matriz);
 		return NULL;
 	}
@@ -51,12 +51,12 @@ int print_matrix(FILE* fp, matrix_t* m) {
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 
 	if (m1 == NULL || m2 == NULL) {
-		printf("Las matrices son invalidas; no se ha podido realizar la multiplicacion \n");
+		fprintf(stderr, "Las matrices son invalidas; no se ha podido realizar la multiplicacion \n");
 		return NULL;
 	}
 
 	if (m1->cols != m2->rows) {
-		printf("Error en las dimensiones; no se ha podido realizar la multiplicacion \n");
+		fprintf(stderr, "Error en las dimensiones; no se ha podido realizar la multiplicacion \n");
 		return NULL;
 	}
 
@@ -74,7 +74,6 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 
 			m3->array[i * m2->cols + j] = resultado;
 			cantidadElementosNueva++;
-
 		}
 	}
 
@@ -83,15 +82,12 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 			printf("%.1f ", m3->array[indice]);
 		}
 	}
-
 	return m3;
 }
 
 
 void load_matrix(matrix_t* m, double* elements) {
-
 	for (int i = 0; i < m->rows * m->cols; i++) {
 		m->array[i] = elements[i];
 	}
-
 }
