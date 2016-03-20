@@ -1,7 +1,6 @@
 #include "matrix.h"
 
-
-#define DEBUG_MODE true
+#define DEBUG_MODE false
 
 struct matrix {
 	size_t rows;
@@ -10,30 +9,25 @@ struct matrix {
 };
 
 matrix_t* create_matrix(size_t rows, size_t cols) {
-	matrix_t* matriz = (matrix_t*)malloc( sizeof(matrix_t) );
+	matrix_t* matriz = (matrix_t*) malloc( sizeof(matrix_t) );
 	if (matriz == NULL) {
 		printf("No se ha podido crear la matriz\n");
 		return NULL;
 	}
-
 	if (rows == 0 || cols == 0) {
 		printf("Dimensiones invalidas, no se ha podido crear la matriz\n");
 		return NULL;
 	}
-
 	matriz->rows = rows;
 	matriz->cols = cols;
-
-	matriz->array = (double*)malloc( rows * cols * sizeof(double) );
+	matriz->array = (double*) malloc( rows * cols * sizeof(double) );
 	if (matriz->array == NULL) {
 		printf("No se ha podido crear la matriz\n");
 		free(matriz);
 		return NULL;
 	}
-
 	if (DEBUG_MODE)
 		printf("Se ha creado la matriz\n");
-
 	return matriz;
 }
 
@@ -45,6 +39,12 @@ void destroy_matrix(matrix_t* m) {
 }
 
 int print_matrix(FILE* fp, matrix_t* m) {
+	for (size_t fila = 0; fila < m->rows; fila++) {
+		for (size_t col = 0; col < m->cols; col++) {
+			fprintf(fp, "%.2f ", m->array[(fila * m->rows) + col]);
+		}
+	}
+	fprintf(fp, "\n");
 	return 0;
 }
 
