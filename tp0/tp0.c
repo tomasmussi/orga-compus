@@ -56,8 +56,9 @@ int print_matrix(FILE* fp, matrix_t* m) {
 	/* Imprime la matriz sobre el file pointer fp
  	* PRE: la matriz fue creada y el file pointer es valido.
  	* POST: la matriz se serealizo en el file pointer */
-	for (size_t fila = 0; fila < m->rows; fila++) {
-		for (size_t col = 0; col < m->cols; col++) {
+ 	size_t fila, col;
+	for (fila=0; fila < m->rows; fila++) {
+		for (col=0; col < m->cols; col++) {
 			fprintf(fp, "%.2f ", m->array[(fila * m->rows) + col]);
 		}
 	}
@@ -80,11 +81,12 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 	// Se genera una nueva matriz m3
 	matrix_t* m3 = create_matrix(m1->rows, m2->cols);
 	int cantidadElementosNueva = 0;
+	int i,j,k,indice;
 
-	for (int i = 0; i < m1->rows; i++) {
-		for (int j = 0; j < m2->cols; j++) {
+	for (i=0; i < m1->rows; i++) {
+		for (j=0; j < m2->cols; j++) {
 			double resultado = 0;
-			for (int k = 0; k < m2->rows; k++) {
+			for (k=0; k < m2->rows; k++) {
 				resultado += m1->array[i * m1->cols + k] * m2->array[k * m2->cols + j];
 			}
 			m3->array[i * m2->cols + j] = resultado;
@@ -93,7 +95,7 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 	}
 
 	if (DEBUG_MODE) {
-		for (int indice = 0; indice < cantidadElementosNueva; indice++) {
+		for (indice=0; indice < cantidadElementosNueva; indice++) {
 			printf("%.1f ", m3->array[indice]);
 		}
 	}
@@ -105,7 +107,8 @@ void load_matrix(matrix_t* m, double* elements) {
 	/* Carga la matriz con los elementos pasados por parametro
  	* PRE: la matriz fue creada
  	* POST: retorna la matriz con los datos cargados  */
-	for (int i = 0; i < m->rows * m->cols; i++) {
+ 	int i;
+	for (i=0; i < m->rows * m->cols; i++) {
 		m->array[i] = elements[i];
 	}
 }
@@ -194,11 +197,12 @@ void tokenizarLinea(char* linea, int indice) {
 	if (DEBUG_MODE) {
 		printf("Dimension: %d\n", dimension);
 		printf("Elementos M1: ");
-		for (int i = 0; i < cantidadElementosM1; i++) {
+		int i,j;
+		for (i=0; i < cantidadElementosM1; i++) {
 			printf("%.1f ", elementosM1[i]);
 		}
 		printf("\nElementos M2: ");
-		for (int j = 0; j < cantidadElementosM1; j++) {
+		for (j=0; j < cantidadElementosM1; j++) {
 			printf("%.1f ", elementosM2[j]);
 		}
 		printf("\n\n\n");
