@@ -5,9 +5,6 @@
 
 #define MAX_SIZE 10
 
-#define DEBUG_MODE false
-
-
 /* ------ Implementacion de funciones de matrices ------- */
 
 typedef struct matrix {
@@ -129,12 +126,6 @@ bool lineaEsValida(char* linea, int indice) {
 	// Copia de la linea original para contar elementos
 	char copiaLinea[indice + 1];
 	strncpy(copiaLinea, linea, (indice + 1));
-	if (DEBUG_MODE) {
-		int original = strlen(linea);
-		int copia = strlen(copiaLinea);
-		printf("Length original %d\n", original);
-		printf("Length copia %d\n", copia);
-	}
 	int cantidadElementos = 0;
 	int dimension = 0;
 	char* token = strtok(copiaLinea, " ");
