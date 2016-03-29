@@ -10,7 +10,7 @@
 
 /* ------ Implementacion de funciones de matrices ------- */
 
-typedef struct matrix{
+typedef struct matrix {
 	size_t rows;
 	size_t cols;
 	double* array;
@@ -38,8 +38,6 @@ matrix_t* create_matrix(size_t rows, size_t cols) {
 		free(matriz);
 		return NULL;
 	}
-	if (DEBUG_MODE)
-		printf("Se ha creado la matriz\n");
 	return matriz;
 }
 
@@ -69,7 +67,6 @@ int print_matrix(FILE* fp, matrix_t* m) {
 		}
 	}
 	fprintf(fp, "\n");
-	// fprintf(fp, "hola");
 	return 0;
 }
 
@@ -89,7 +86,7 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 	// Se genera una nueva matriz m3
 	matrix_t* m3 = create_matrix(m1->rows, m2->cols);
 	int cantidadElementosNueva = 0;
-	int i,j,k,indice;
+	int i,j,k;
 
 	for (i=0; i < m1->rows; i++) {
 		for (j=0; j < m2->cols; j++) {
@@ -99,12 +96,6 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 			}
 			m3->array[i * m2->cols + j] = resultado;
 			cantidadElementosNueva++;
-		}
-	}
-
-	if (DEBUG_MODE) {
-		for (indice=0; indice < cantidadElementosNueva; indice++) {
-			printf("%.1f ", m3->array[indice]);
 		}
 	}
 	return m3;
@@ -149,20 +140,10 @@ bool lineaEsValida(char* linea, int indice) {
 	char* token = strtok(copiaLinea, " ");
 	dimension = atoi(token);
 	while (token != NULL) {
-		if (DEBUG_MODE) {
-			// printf("%s\n", token);
-		}
 		cantidadElementos++;
 		token = strtok(NULL, " ");
 	}
-	if (DEBUG_MODE) {
-		printf("Cantidad Elementos en Linea: %d\n", cantidadElementos);
-		printf("Dimension: %d\n", dimension);
-		printf("Linea original: %s\n", linea);
-		printf("Copia Linea: %s\n", copiaLinea);
-		printf("---\n");
-	}
-	if (dimension <= 0) 
+	if (dimension <= 0)
 		return false;
 	if ( (dimension * dimension * 2) != cantidadElementos - 1 ) {
 		return false;
@@ -172,7 +153,7 @@ bool lineaEsValida(char* linea, int indice) {
 
 void tokenizarLinea(char* linea, int indice) {
 	if (!lineaEsValida(linea, indice)) {
-		fprintf(stderr, "\tLa dimension no concuerda con la cantidad de elementos de la linea.\n");
+		fprintf(stderr, "La dimension no concuerda con la cantidad de elementos de la linea.\n");
 		return;
 	} 
 	int cantidadElementos = 0;
@@ -202,24 +183,9 @@ void tokenizarLinea(char* linea, int indice) {
 		token = strtok(NULL, " ");
 	}
 
-	if (DEBUG_MODE) {
-		printf("Dimension: %d\n", dimension);
-		printf("Elementos M1: ");
-		int i,j;
-		for (i=0; i < cantidadElementosM1; i++) {
-			printf("%.1f ", elementosM1[i]);
-		}
-		printf("\nElementos M2: ");
-		for (j=0; j < cantidadElementosM1; j++) {
-			printf("%.1f ", elementosM2[j]);
-		}
-		printf("\n\n\n");
-	}
-
 	/* Se deberian cargar las matrices */
 	matrix_t* matrizA = create_matrix(dimension, dimension);
 	matrix_t* matrizB = create_matrix(dimension, dimension);
-
 	load_matrix(matrizA, elementosM1);
 	load_matrix(matrizB, elementosM2);
 	matrix_t *producto = matrix_multiply(matrizA, matrizB);
@@ -263,7 +229,6 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 	// Si la linea no esta vacia
 	if (strlen(resultado) > 0) {
 		*cantidadLineas += 1;
-		// printf("%s\n", resultado);
 		tokenizarLinea(resultado, indice + 1);
 	}
 }
