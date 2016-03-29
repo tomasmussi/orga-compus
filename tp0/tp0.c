@@ -8,18 +8,19 @@
 #define DEBUG_MODE false
 
 
-/* ------ Manejo de las matrices ------- */
+/* ------ Implementacion de funciones de matrices ------- */
 
 typedef struct matrix{
 	size_t rows;
 	size_t cols;
 	double* array;
-}matrix_t;
+} matrix_t;
 
+/* Constructor de matriz.
+ * PRE: rows y cols son mayores a 0
+ * POST: devuelve una matriz vacia 
+ **/
 matrix_t* create_matrix(size_t rows, size_t cols) {
-	/* Constructor de matriz.
-	* PRE: rows y cols son mayores a 0
-	* POST: devuelve una matriz vacia */
 	matrix_t* matriz = (matrix_t*) malloc( sizeof(matrix_t) );
 	if (matriz == NULL) {
 		fprintf(stderr, "No se ha podido crear la matriz\n");
@@ -42,34 +43,41 @@ matrix_t* create_matrix(size_t rows, size_t cols) {
 	return matriz;
 }
 
+/* Destructor de matriz.
+ * PRE: la matriz fue creada.
+ * POST: matriz destruida y recursos liberados 
+ **/
 void destroy_matrix(matrix_t* m) {
-	/* Destructor de matriz.
- 	* PRE: la matriz fue creada.
- 	* POST: matriz destruida y recursos liberados */
     if (m != NULL) {
         free (m->array);
         free (m);
     }
 }
 
+/* Imprime la matriz sobre el file pointer fp
+ * PRE: la matriz fue creada y el file pointer es valido.
+ * POST: la matriz se serealizo en el file pointer 
+ **/
 int print_matrix(FILE* fp, matrix_t* m) {
-	/* Imprime la matriz sobre el file pointer fp
- 	* PRE: la matriz fue creada y el file pointer es valido.
- 	* POST: la matriz se serealizo en el file pointer */
  	size_t fila, col;
 	for (fila=0; fila < m->rows; fila++) {
 		for (col=0; col < m->cols; col++) {
-			fprintf(fp, "%.2f ", m->array[(fila * m->rows) + col]);
+			fprintf(fp, "%g", m->array[(fila * m->rows) + col]);
+			if (((fila + 1) != m->rows) || ((col + 1) != m->cols)) {
+				fprintf(fp, " ");
+			}
 		}
 	}
 	fprintf(fp, "\n");
+	// fprintf(fp, "hola");
 	return 0;
 }
 
+/* Multiplica las matrices en m1 y m2
+ * PRE: las matrices fueron creadas
+ * POST: retorna una nueva matriz resultado del producto 
+ **/
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
-	/* Multiplica las matrices en m1 y m2
- 	* PRE: las matrices fueron creadas
- 	* POST: retorna una nueva matriz resultado del producto */
 	if (m1 == NULL || m2 == NULL) {
 		fprintf(stderr, "Las matrices son invalidas; no se ha podido realizar la multiplicacion \n");
 		return NULL;
@@ -102,11 +110,11 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 	return m3;
 }
 
-
+/* Carga la matriz con los elementos pasados por parametro
+ * PRE: la matriz fue creada
+ * POST: retorna la matriz con los datos cargados  
+ **/
 void load_matrix(matrix_t* m, double* elements) {
-	/* Carga la matriz con los elementos pasados por parametro
- 	* PRE: la matriz fue creada
- 	* POST: retorna la matriz con los datos cargados  */
  	int i;
 	for (i=0; i < m->rows * m->cols; i++) {
 		m->array[i] = elements[i];
@@ -265,7 +273,6 @@ int main(int argc, char *argv[]) {
 		show_help(argv[1]);
 		return 0;
 	}
-	/* ./tp0 < prueba.txt */
 	int cantidadLineas = 0;
 	while (!feof(stdin)) {
 		leerLinea(stdin, &cantidadLineas);
