@@ -156,9 +156,17 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 		if (subindice > 0) {
 			if (dimension == -1) {
 				dimension = atoi(elemento);
-				// TODO(tomas) Manejar errores
 				matriz1 = malloc(sizeof(double) * dimension * dimension);
+				if (matriz1 == NULL) {
+					fprintf(stderr, "No hay suficiente memoria para la matriz 1\n");
+					return;
+				}
 				matriz2 = malloc(sizeof(double) * dimension * dimension);
+				if (matriz2 == NULL) {
+					free(matriz1);
+					fprintf(stderr, "No hay suficiente memoria para la matriz 2\n");
+					return;
+				}
 			} else if (elementos >= ((dimension * dimension * 2))) {
 				// Cantidad invalida
 				invalido = true;
