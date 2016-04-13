@@ -55,6 +55,7 @@ void destroy_matrix(matrix_t* m) {
  **/
 int print_matrix(FILE* fp, matrix_t* m) {
  	size_t fila, col;
+ 	fprintf(fp, "%d ", m->rows);
 	for (fila=0; fila < m->rows; fila++) {
 		for (col=0; col < m->cols; col++) {
 			fprintf(fp, "%g", m->array[(fila * m->rows) + col]);
