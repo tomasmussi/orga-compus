@@ -72,6 +72,8 @@ int print_matrix(FILE* fp, matrix_t* m) {
  * POST: retorna una nueva matriz resultado del producto 
  **/
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
+	int i, j, k, cantidadElementosNueva;
+	matrix_t* m3;	
 	if (m1 == NULL || m2 == NULL) {
 		fprintf(stderr, "Las matrices son invalidas; no se ha podido realizar la multiplicacion \n");
 		return NULL;
@@ -80,10 +82,9 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 		fprintf(stderr, "Error en las dimensiones; no se ha podido realizar la multiplicacion \n");
 		return NULL;
 	}
-	// Se genera una nueva matriz m3
-	matrix_t* m3 = create_matrix(m1->rows, m2->cols);
-	int cantidadElementosNueva = 0;
-	int i,j,k;
+	/* Se genera una nueva matriz m3 */
+	m3 = create_matrix(m1->rows, m2->cols);	
+	cantidadElementosNueva = 0;
 
 	for (i=0; i < m1->rows; i++) {
 		for (j=0; j < m2->cols; j++) {
@@ -123,11 +124,14 @@ void show_help(const char *arg) {
 }
 
 void multiplicar(int dimension, double *matriz1, double *matriz2) {
-	matrix_t* matrizA = create_matrix(dimension, dimension);
-	matrix_t* matrizB = create_matrix(dimension, dimension);
+	matrix_t* matrizA;
+	matrix_t* matrizB;
+	matrix_t* producto;
+	matrizA = (matrix_t*) create_matrix(dimension, dimension);
+	matrizB = (matrix_t*) create_matrix(dimension, dimension);
 	load_matrix(matrizA, matriz1);
 	load_matrix(matrizB, matriz2);
-	matrix_t *producto = matrix_multiply(matrizA, matrizB);
+	producto = (matrix_t*) matrix_multiply(matrizA, matrizB);
 	print_matrix(stdout, producto);
 	destroy_matrix(matrizA);
 	destroy_matrix(matrizB);
@@ -168,7 +172,7 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 					return;
 				}
 			} else if (elementos >= ((dimension * dimension * 2))) {
-				// Cantidad invalida
+				/* Cantidad invalida */
 				invalido = true;
 			} else {
 				if (dimension > 0) {
@@ -212,11 +216,12 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 }
 
 int main(int argc, char *argv[]) {
+	int cantidadLineas;
 	if (argc != 1) {
 		show_help(argv[1]);
 		return 0;
 	}
-	int cantidadLineas = 0;
+	cantidadLineas = 0;
 	while (!feof(stdin)) {
 		leerLinea(stdin, &cantidadLineas);
 	}
