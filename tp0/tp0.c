@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #define MAX_SIZE 10
+#define MAX_DIGITOS 1000
 
 /* ------ Implementacion de funciones de matrices ------- */
 
@@ -186,8 +187,89 @@ void tokenizarLinea(char* linea, int indice) {
 	destroy_matrix(producto);
 }
 
+void multiplicar(int dimension, double *matriz1, double *matriz2) {
+	matrix_t* matrizA = create_matrix(dimension, dimension);
+	matrix_t* matrizB = create_matrix(dimension, dimension);
+	load_matrix(matrizA, matriz1);
+	load_matrix(matrizB, matriz2);
+	matrix_t *producto = matrix_multiply(matrizA, matrizB);
+	print_matrix(stdout, producto);
+	destroy_matrix(matrizA);
+	destroy_matrix(matrizB);
+	destroy_matrix(producto);
+}
+
 void leerLinea(FILE* archivo, int* cantidadLineas) {
-	int tamanioLinea = MAX_SIZE;
+	int dimension = -1;
+	int elementos = 0;
+	double *matriz1 = NULL;
+	double *matriz2 = NULL;
+	int index1 = 0;
+	int index2 = 0;
+	
+	char elemento[MAX_DIGITOS];
+	int subindice = 0;
+	char caracter = 'A';
+	bool invalido = false;
+	while (caracter != '\n' && caracter != EOF && !invalido) {
+		caracter = getc(archivo);
+		while (caracter != '\n' && caracter != EOF && caracter != ' ') {
+			elemento[subindice++] = caracter;
+			caracter = getc(archivo);			
+		}
+		elemento[subindice] = '\0';
+		if (subindice > 0) {
+			if (dimension == -1) {
+				dimension = atoi(elemento);
+				// TODO(tomas) Manejar errores
+				matriz1 = malloc(sizeof(double) * dimension * dimension);
+				matriz2 = malloc(sizeof(double) * dimension * dimension);
+			} else if (elementos >= ((dimension * dimension * 2))) {
+				// Cantidad invalida
+				invalido = true;
+			} else {
+				if (dimension > 0) {
+					if ((elementos / (dimension * dimension)) == 0) {
+						matriz1[index1++] = atof(elemento);
+					} else {
+						if (elementos == ((dimension * dimension * 2))) {
+							invalido = true;
+						} else {
+							matriz2[index2++] = atof(elemento);
+						}
+					}
+					elementos++;
+				} else {
+					invalido = true;
+				}
+			}			
+		}
+		while (caracter == ' ') {
+			caracter = getc(archivo);
+		}
+		if (caracter != '\n' && caracter != EOF) {
+			subindice = 0;
+			elemento[subindice++] = caracter;
+		}
+	}
+	if ( elementos > 0) {
+		if (invalido || (dimension * dimension * 2 != elementos)) {
+			fprintf(stderr, "La dimension no concuerda con la cantidad de elementos de la linea.\n");
+			while (caracter != '\n' && caracter != EOF) {
+				caracter = getc(archivo);
+			}
+		} else {
+			multiplicar(dimension, matriz1, matriz2);
+		}
+	} else if (dimension == 0) {
+		fprintf(stderr, "La dimension no concuerda con la cantidad de elementos de la linea.\n");
+	}
+	free(matriz1);
+	free(matriz2);
+}
+/*
+void leerLinea(FILE* archivo, int* cantidadLineas) {
+	unsigned long long tamanioLinea = MAX_SIZE;
 	char* bufferLinea = (char*) malloc(sizeof(char) * tamanioLinea);
 	if (bufferLinea == NULL) {
 		printf("No se puede asignar memoria al bufferLinea \n");
@@ -198,6 +280,9 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 	while ((caracter != '\n') && (caracter != EOF)) {
 		if (indice >= MAX_SIZE) {
 			tamanioLinea += MAX_SIZE;
+			if (tamanioLinea >= 2147480000) {
+				printf("Tamanio mayor a 2 mil millones\n");
+			}
 			char *nuevoBufferLinea = realloc(bufferLinea, tamanioLinea);
 			if (bufferLinea == NULL) {
 				free(bufferLinea);
@@ -222,7 +307,7 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 		*cantidadLineas += 1;
 		tokenizarLinea(resultado, indice + 1);
 	}
-}
+}*/
 
 int main(int argc, char *argv[]) {
 	if (argc != 1) {

@@ -21,7 +21,7 @@ test%:
 	diff -iadq tests/test$*/__out__ tests/$@/__stdout__
 	diff -iadq tests/test$*/__err__ tests/$@/__stderr__
 	
-todo-test: test1 test2 test3 test4 test5 test6 test7 test8
+todo-test: test1 test2 test3 test4 test5 test6 test7 test8 test9
 	echo "PASAN TODAS LAS PRUEBAS!"
 
 .PHONY: clean main
