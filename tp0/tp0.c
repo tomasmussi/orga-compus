@@ -29,6 +29,7 @@ matrix_t* create_matrix(size_t rows, size_t cols) {
 	}
 	matriz->rows = rows;
 	matriz->cols = cols;
+	matriz->array = NULL;
 	matriz->array = (double*) malloc( rows * cols * sizeof(double) );
 	if (matriz->array == NULL) {
 		fprintf(stderr, "No se ha podido crear la matriz\n");
