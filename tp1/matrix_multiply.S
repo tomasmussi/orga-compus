@@ -86,10 +86,35 @@ for3:
 	
 	# contenido loop
 
+	mul	t5, t0, s1		# t5 = i * m1->cols
+	add	t5, t5, t2		# t5 = t5 + k
+	add	t6, a0, 8		# &m1->array[0]
+	mul	t5, t5, 4		# t5 = t5 * 4
+	add	t6, t6, t5		# &m1->array[t5]
+	lw	t5, 0(t6)		# t5 = m1->array[t5]
+
+	mul	t7, t2, s3		# t7 = k * m2->cols
+	add 	t7, t7, t1		# t7 = t7 + j
+	add	t8, a1, 8		# &m2->array[0]
+	mul	t7, t7, 4		# t7 = t7 * 4
+	add	t8, t8, t7		# &m2->array[t7]
+	lw	t7, 0(t8)		# t7 = m2->array[t7]
+
+	mul	t6, t5, t7		# t6 = t5 * t7
+	
+	add 	t4, t4, t6		# resultado += t6
+
 	addi	t2, t2, 1		# k++
 	j	for3
 
 update2:
+	mul	t5, t0, s3		# t5 = i * m2->cols
+	add	t5, t5, t1		# t5 = t5 + j
+
+	# TODO: falta guardar en m3
+
+	addi	t3, t3, 1		# cantidadElementosNueva++
+
 	addi	t1, t1, 1		# j++
 	j	for2
 	
