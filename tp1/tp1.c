@@ -99,8 +99,8 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 	1 Llamada a funcion
 
 	*/
-	int i, j, k, m1rows, m1cols, m2rows, m2cols, offset1, offset2;
-	double resultado, intermedio;
+	int i, j, k, m1rows, m1cols, m2rows, m2cols, offset;
+	double resultado, intermedio, intermedio2;
 	matrix_t* m3;
 
 	m1rows = m1->rows;
@@ -115,12 +115,14 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 	while (i < m1rows) {
 		j = 0;
 		while (j < m2cols) {
-			resultado = 0;
 			k = 0;
+			resultado = 0;
 			while (k < m2rows) {
-				offset1 = i * m1cols + k;
-				offset2 = k * m2cols + j;
-				intermedio = m1->array[offset1] * m2->array[offset2];
+				offset = (i * m1cols) + k;
+				intermedio = m1->array[offset];
+				offset = (k * m2cols) + j;
+				intermedio2 = m2->array[offset];
+				intermedio = intermedio * intermedio2;
 				resultado += intermedio;
 				k++;
 			}

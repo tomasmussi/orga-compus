@@ -3,21 +3,30 @@
 #
 # TODO: FRAME = x (SRA) + x (LTA) + 4 (ABA)
 #
-# m1: rows (0-4), cols (4-8), array[0] (8-12), array[1] (12-16), etc.
+# m1: rows (0-3), cols (4-7), double* (8-11).
 # rows y cols son size_t 	(4 bytes)
-# a[i] son double* 		(4 bytes)
+# array es PUNTERO a double	(4 bytes)
+# array[i] es double 		(8 bytes)
 #
-# t0: i
-# t1: j
-# t2: k
-# t4: resultado
-#
-# s0: m1->rows
-# s1: m1->cols
-# s2: m2->rows
-# s3: m2->cols
+# Enteros
+	# t0: i
+	# t1: j
+	# t2: k
+	# t3: m1rows
+	# t4: m1cols
+	# t5: m2rows
+	# t6: m2cols
+	# t7: offset
+# Floating Point
+	# f0: resultado
+	# f1: intermedio
+	# f2: intermedio2
+# Punteros
+	# v0: m3
 
 #include <mips/regdef.h>
+
+# TODO: Revisar direcciones de memoria---------
 
 #define FRAME_S 40
 #define GP_POS	24
@@ -26,6 +35,8 @@
 
 #define ARG0_POS 40
 #define ARG1_POS 44
+#define i_POS 52
+#define OFFSET_POS 48
 
 	.text				# segmento de texto del programa
 
@@ -49,77 +60,95 @@ matrix_multiply:
 	sw	$fp, FP_POS(sp)		# se guardan los callee-saved regs en SRA
 	sw	ra, RA_POS(sp)
 	move	$fp, sp
+
+	###### Guardo los argumentos
+	sw	a0, ARG0_POS($fp)	# Guardo en $fp + ARG0_POS a0, que es el puntero a m1
+	sw	a1, ARG1_POS($fp)	# Guardo en $fp + ARG1_POS a1, que es el puntero a m2
+
+	###### Comienzo de la funcion
+
+	# TODO: comprobar si argumentos son null -----------
+
+	# se inicializan las variables
+	lw	t3, 0(a0)		# m1rows = m1->rows;
+	lw	t4, 4(a1)		# m2cols = m2->cols;
 	
-	sw	a0, ARG0_POS($fp)	# se guardan los argumentos
-	sw	a1, ARG1_POS($fp)
+	###### Hago la llamada a create matrix
+	move a0, t3
+	move a1, t6
+	la 	t9, create_matrix	# m3 = create_matrix(m1rows, m2cols);
+	jal ra, t9
+	# Aca ya tengo en v0 la direccion de memoria de m3, la matriz resultado,
+	# porque create_matrix me devuelve el puntero m3 en v0.
+	#
+	# Recordar que al llamar a la funcion, perdimos los valores de los temporales
+	# por lo que debemos cargar de nuevo a t3 y t6
+	
+	###### Recupero los argumentos, luego de llamar a la funcion create matrix
+	lw	a0, ARG0_POS($fp)	# Recupero el valor de a0 que guarde antes en $fp + ARG0_POS
+	lw	a1, ARG1_POS($fp)	# Recupero el valor de a1 que guarde antes en $fp + ARG1_POS
+	lw	t3, 0(a0)		# m1rows = m1->rows;
+	lw	t6, 4(a1)		# m2cols = m2->cols;
 
-	######
-					# se inicializan las variables
-	li	t0, zero		# i
-	li	t1, zero		# j
-	li	t2, zero		# k
-	li	t4, zero		# resultado
-					# se guardan valores de las matrices
-	lw	a0, ARG0_POS($fp)	
-	lw	s0, 0(a0)		# m1->rows
-	lw	s1, 4(a0)		# m1->cols
-	lw	a1, ARG1_POS($fp)
-	lw	s2, 0(a1)		# m2->rows
-	lw	s3, 4(a1)		# m2->cols
-
-	# TODO: comprobar si argumentos son null, crear m3
+	lw	t4, 4(a0)		# m1cols = m1->cols;
+	lw	t5, 0(a1)		# m2rows = m2->rows;
+	li	t0, zero		# i = 0;
 
 for1:
-	bge	t0, s0, exit_loop	# i >= m1->rows
-	li	t1, zero		# j = 0
+	bge	t0, t3, exit_for1	# si i >= m1->rows, termino for1
+	li	t1, zero			# j = 0
 	
 for2: 
-	bge 	t1, s3, update1		# j >= m2->cols
-	li	t2, zero		# k = 0
-	li	t4, zero		# resultado = 0
+	bge t1, t6, exit_for2	# si j >= m2->cols, termino for2
+	li	t2, zero			# k = 0
+	ld	f0, zero			# resultado = 0
 
 for3:
-	bge	t2, s2, update2		# k >= m2->rows
-	
-	# contenido loop
+	bge	t2, t5, exit_for3		# k >= m2->rows
 
-	mul	t5, t0, s1		# t5 = i * m1->cols
-	add	t5, t5, t2		# t5 = t5 + k
-	add	t6, a0, 8		# &m1->array[0]
-	mul	t5, t5, 4		# t5 = t5 * 4
-	add	t6, t6, t5		# &m1->array[t5]
-	lw	t5, 0(t6)		# t5 = m1->array[t5]
+	mul	t7, t0, t4		# (i * m1->cols)
+	addu t7, t7, t2		# offset = (i * m1->cols) + k
 
-	mul	t7, t2, s3		# t7 = k * m2->cols
-	add 	t7, t7, t1		# t7 = t7 + j
-	add	t8, a1, 8		# &m2->array[0]
-	mul	t7, t7, 4		# t7 = t7 * 4
-	add	t8, t8, t7		# &m2->array[t7]
-	lw	t7, 0(t8)		# t7 = m2->array[t7]
+	sw t0, i_POS($fp)	# Guardo el valor de i actual en memoria
 
-	mul	t6, t5, t7		# t6 = t5 * t7
-	
-	add 	t4, t4, t6		# resultado += t6
+	lw t0, 8(a0)		# Guardo en t0 la direccion de memoria del array de m1
+	mul t7, t7, 8		# Me desplazo "offset" posiciones * 8 bytes por posicion (multiplico por 8 bytes ser double)
+	addu t0, t0, t7		# Sumo "offset" posiciones a la direccion de memoria del array de m1
+	ld f1, 0(t0)		# intermedio = m1->array[offset];
 
-	addi	t2, t2, 1		# k++
-	j	for3
+	mul	t7, t2, t6		# (k * m2cols)
+	addu t7, t7, t1		# offset = (k * m2cols) + j
 
-update2:
+	lw t0, 8(a1)		# Guardo en t0 la direccion de memoria del array de m2
+	mul t7, t7, 8		# Me desplazo "offset" posiciones * 8 bytes por posicion (multiplico por 8 bytes ser double)
+	addu t0, t0, t7		# Sumo "offset" posiciones a la direccion de memoria del array de m2
+	ld f2, 0(t0)		# intermedio2 = m2->array[offset];
+
+
+	mul f1, f1, f2		# intermedio = intermedio * intermedio2;
+	addu f0, f0, f1		# resultado += intermedio;
+
+	lw t0, i_POS($fp)	# Recupero el valor actual de i
+	addu t2, t2, 1 		# k++;
+
+	j	for3			# Vuelvo a ejecutar for 3
+
+exit_for3:
 	mul	t5, t0, s3		# t5 = i * m2->cols
 	add	t5, t5, t1		# t5 = t5 + j
 
-	# TODO: falta guardar en m3
+	# TODO: falta guardar: m3->array[i * m2cols + j] = resultado;
 
 	addi	t1, t1, 1		# j++
 	j	for2
 	
-update1:
+exit_for2:
 	addi	t0, t0, 1		# i++
 	j	for1
 
 	######
 
-exit_loop:
+exit_for1:
 
 	# TODO: falta return m3
 
