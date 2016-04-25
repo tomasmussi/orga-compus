@@ -10,7 +10,6 @@
 # t0: i
 # t1: j
 # t2: k
-# t3: cantidadElementosNueva
 # t4: resultado
 #
 # s0: m1->rows
@@ -37,7 +36,6 @@
 	.ent	matrix_multiply
 
 matrix_multiply:
-	
 	.frame	$fp, FRAME_S, ra	# informacion de debugging
 
 	.set	noreorder		# bloque para codigo PIC
@@ -60,7 +58,6 @@ matrix_multiply:
 	li	t0, zero		# i
 	li	t1, zero		# j
 	li	t2, zero		# k
-	li	t3, zero		# cantidadElementosNueva
 	li	t4, zero		# resultado
 					# se guardan valores de las matrices
 	lw	a0, ARG0_POS($fp)	
@@ -112,8 +109,6 @@ update2:
 	add	t5, t5, t1		# t5 = t5 + j
 
 	# TODO: falta guardar en m3
-
-	addi	t3, t3, 1		# cantidadElementosNueva++
 
 	addi	t1, t1, 1		# j++
 	j	for2
