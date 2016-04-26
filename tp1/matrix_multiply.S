@@ -95,7 +95,7 @@ matrix_multiply:
 
 	## se inicializan las variables
 	lw	t3, 0(a0)		# m1rows = m1->rows;
-	lw	t4, 4(a1)		# m2cols = m2->cols;
+	lw	t6, 4(a1)		# m2cols = m2->cols;
 
 	###### Hago la llamada a create matrix
 	move a0, t3
