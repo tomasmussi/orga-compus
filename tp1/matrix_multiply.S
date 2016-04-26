@@ -101,7 +101,7 @@ for1:
 for2:
 	bge t1, t6, exit_for2	# si j >= m2->cols, termino for2
 	li	t2, 0			# k = 0
-	li	f0, 0			# resultado = 0
+	li.d	$f0, 0			# resultado = 0
 
 for3:
 	bge	t2, t5, exit_for3		# k >= m2->rows
@@ -114,7 +114,7 @@ for3:
 	lw t0, 8(a0)		# Guardo en t0 la direccion de memoria del array de m1
 	mul t7, t7, 8		# Me desplazo "offset" posiciones * 8 bytes por posicion (multiplico por 8 bytes ser double)
 	addu t0, t0, t7		# Sumo "offset" posiciones a la direccion de memoria del array de m1
-	ld f1, 0(t0)		# intermedio = m1->array[offset];
+	l.d $f1, 0(t0)		# intermedio = m1->array[offset];
 
 	mul	t7, t2, t6		# (k * m2cols)
 	addu t7, t7, t1		# offset = (k * m2cols) + j
@@ -122,11 +122,11 @@ for3:
 	lw t0, 8(a1)		# Guardo en t0 la direccion de memoria del array de m2
 	mul t7, t7, 8		# Me desplazo "offset" posiciones * 8 bytes por posicion (multiplico por 8 bytes ser double)
 	addu t0, t0, t7		# Sumo "offset" posiciones a la direccion de memoria del array de m2
-	ld f2, 0(t0)		# intermedio2 = m2->array[offset];
+	l.d $f2, 0(t0)		# intermedio2 = m2->array[offset];
 
 
-	mul f1, f1, f2		# intermedio = intermedio * intermedio2;
-	addu f0, f0, f1		# resultado += intermedio;
+	mul $f1, $f1, $f2		# intermedio = intermedio * intermedio2;
+	addu $f0, $f0, $f1		# resultado += intermedio;
 
 	lw t0, i_POS($fp)	# Recupero el valor actual de i
 	addu t2, t2, 1 		# k++;
@@ -143,7 +143,7 @@ exit_for3:
 	## cargar la direccion de memoria que necesito y hacer el store
 	lw t2, 8(v0)		# double *puntero = m3->array;
 	addu t2, t2, t7		# m3->array[offset];
-	sd f0, 0(t2)		# m3->array[offset] = resultado;
+	s.d $f0, 0(t2)		# m3->array[offset] = resultado;
 
 	addi	t1, t1, 1	# j++;
 	j	for2
