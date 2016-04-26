@@ -1,7 +1,6 @@
 ##
 ## Codigo MIPS para la funcion matrix_multiply
 ##
-## TODO: FRAME = x (SRA) + x (LTA) + 4 (ABA)
 ##
 ## m1: rows (0-3), cols (4-7), double* (8-11).
 ## rows y cols son size_t 	(4 bytes)
@@ -9,7 +8,7 @@
 ## array[i] es double 		(8 bytes)
 ##
 ## Enteros
-	## t0: i
+	## t0: i => Se guarda en memoria
 	## t1: j
 	## t2: k
 	## t3: m1rows
@@ -26,17 +25,42 @@
 
 #include <mips/regdef.h>
 
-## TODO: Revisar direcciones de memoria---------
+## FRAME = 4 (SRA) + 0 (FPA) + 2 (LTA) + 2 (ABA)
+## Memoria = 16 + 0 + 8 + 8 = 32 bytes
 
-#define FRAME_S 40
-#define GP_POS	24
-#define FP_POS 	28
-#define RA_POS 	32
+## SRA (Save Register Area):
+## 1) ra (Return address)
+## 2) fp (Frame Pointer)
+## 3) gp (Global Pointer)
+## Esto nos da un SRA de 4 * 4 bytes = 16 bytes (alineado a 8 bytes)
+## 4 REGISTROS
 
-#define ARG0_POS 40
-#define ARG1_POS 44
-#define i_POS 52
-#define OFFSET_POS 48
+## FPRA (Floating Point Register Area)
+## Se utilizan 3 registros de punto flotante pero ninguno se almacena en memoria
+## 0 REGISTROS
+
+## LTA (Local and Temporary Area)
+## Se utilizan los 8 registros, de los cuales se guardan en memoria:
+## 1) i que se utiliza con el registro t0
+## Esto nos da un LTA de 2 * 4 bytes = 8 bytes (alineado a 8 bytes)
+## 2 REGISTROS
+
+## ABA (Argument Building Area)
+## Esta funcion invoca a create matrix que toma dos argumentos de entrada
+## a0: cantidad de filas de la matriz
+## a1: cantidad de columnas de la matriz
+## Esto nos da un ABA de 2 * 4 bytes = 8 bytes (alineado a 8 bytes)
+## 2 REGISTROS
+
+
+#define FRAME_S 32
+#define GP_POS	16
+#define FP_POS 	20
+#define RA_POS 	24
+
+#define ARG0_POS 32
+#define ARG1_POS 36
+#define i_POS 8
 
 	.text				## segmento de texto del programa
 
