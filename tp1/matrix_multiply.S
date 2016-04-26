@@ -19,8 +19,8 @@
 	## t7: offset
 ## Floating Point
 	## f0: resultado
-	## f1: intermedio
-	## f2: intermedio2
+	## f2: intermedio
+	## f4: intermedio2
 ## Punteros
 	## v0: m3
 
@@ -114,7 +114,7 @@ for3:
 	lw t0, 8(a0)		# Guardo en t0 la direccion de memoria del array de m1
 	mul t7, t7, 8		# Me desplazo "offset" posiciones * 8 bytes por posicion (multiplico por 8 bytes ser double)
 	addu t0, t0, t7		# Sumo "offset" posiciones a la direccion de memoria del array de m1
-	l.d $f1, 0(t0)		# intermedio = m1->array[offset];
+	l.d $f2, 0(t0)		# intermedio = m1->array[offset];
 
 	mul	t7, t2, t6		# (k * m2cols)
 	addu t7, t7, t1		# offset = (k * m2cols) + j
@@ -122,11 +122,11 @@ for3:
 	lw t0, 8(a1)		# Guardo en t0 la direccion de memoria del array de m2
 	mul t7, t7, 8		# Me desplazo "offset" posiciones * 8 bytes por posicion (multiplico por 8 bytes ser double)
 	addu t0, t0, t7		# Sumo "offset" posiciones a la direccion de memoria del array de m2
-	l.d $f2, 0(t0)		# intermedio2 = m2->array[offset];
+	l.d $f4, 0(t0)		# intermedio2 = m2->array[offset];
 
 
-	mul $f1, $f1, $f2		# intermedio = intermedio * intermedio2;
-	addu $f0, $f0, $f1		# resultado += intermedio;
+	mul.d $f2, $f2, $f4		# intermedio = intermedio * intermedio2;
+	add.d $f0, $f0, $f2		# resultado += intermedio;
 
 	lw t0, i_POS($fp)	# Recupero el valor actual de i
 	addu t2, t2, 1 		# k++;

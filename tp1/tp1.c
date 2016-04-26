@@ -78,9 +78,9 @@ int print_matrix(FILE* fp, matrix_t* m) {
  * PRE: las matrices fueron creadas
  * POST: retorna una nueva matriz resultado del producto
  **/
-
+/*
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
-
+*/
 	/*
 	if (m1 == NULL || m2 == NULL) {
 		fprintf(stderr, "Las matrices son invalidas; no se ha podido realizar la multiplicacion \n");
@@ -99,6 +99,7 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 	1 Llamada a funcion
 
 	*/
+/*
 	int i, j, k, m1rows, m1cols, m2rows, m2cols, offset;
 	double resultado, intermedio, intermedio2;
 	matrix_t* m3;
@@ -133,7 +134,7 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 		i++;
 	}
 	return m3;
-}
+}*/
 
 /* Carga la matriz con los elementos pasados por parametro
  * PRE: la matriz fue creada
