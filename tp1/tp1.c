@@ -20,7 +20,7 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2);
 
 /* Constructor de matriz.
  * PRE: rows y cols son mayores a 0
- * POST: devuelve una matriz vacia 
+ * POST: devuelve una matriz vacia
  **/
 matrix_t* create_matrix(size_t rows, size_t cols) {
 	matrix_t* matriz = (matrix_t*) malloc( sizeof(matrix_t) );
@@ -46,7 +46,7 @@ matrix_t* create_matrix(size_t rows, size_t cols) {
 
 /* Destructor de matriz.
  * PRE: la matriz fue creada.
- * POST: matriz destruida y recursos liberados 
+ * POST: matriz destruida y recursos liberados
  **/
 void destroy_matrix(matrix_t* m) {
     if (m != NULL) {
@@ -57,11 +57,11 @@ void destroy_matrix(matrix_t* m) {
 
 /* Imprime la matriz sobre el file pointer fp
  * PRE: la matriz fue creada y el file pointer es valido.
- * POST: la matriz se serealizo en el file pointer 
+ * POST: la matriz se serealizo en el file pointer
  **/
 int print_matrix(FILE* fp, matrix_t* m) {
  	size_t fila, col;
- 	fprintf(fp, "%d ", m->rows);
+ 	fprintf(fp, "%zu ", m->rows);
 	for (fila=0; fila < m->rows; fila++) {
 		for (col=0; col < m->cols; col++) {
 			fprintf(fp, "%g", m->array[(fila * m->rows) + col]);
@@ -76,7 +76,7 @@ int print_matrix(FILE* fp, matrix_t* m) {
 
 /* Multiplica las matrices en m1 y m2
  * PRE: las matrices fueron creadas
- * POST: retorna una nueva matriz resultado del producto 
+ * POST: retorna una nueva matriz resultado del producto
  **/
 
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
@@ -126,7 +126,8 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 				resultado += intermedio;
 				k++;
 			}
-			m3->array[i * m2cols + j] = resultado;
+			offset = (i * m2cols) + j;
+			m3->array[offset] = resultado;
 			j++;
 		}
 		i++;
@@ -136,7 +137,7 @@ matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
 
 /* Carga la matriz con los elementos pasados por parametro
  * PRE: la matriz fue creada
- * POST: retorna la matriz con los datos cargados  
+ * POST: retorna la matriz con los datos cargados
  **/
 void load_matrix(matrix_t* m, double* elements) {
  	int i;
@@ -180,7 +181,7 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 	double *matriz2 = NULL;
 	int index1 = 0;
 	int index2 = 0;
-	
+
 	char elemento[MAX_DIGITOS];
 	int subindice = 0;
 	char caracter = 'A';
@@ -189,7 +190,7 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 		caracter = getc(archivo);
 		while (caracter != '\n' && caracter != EOF && caracter != ' ') {
 			elemento[subindice++] = caracter;
-			caracter = getc(archivo);			
+			caracter = getc(archivo);
 		}
 		elemento[subindice] = '\0';
 		if (subindice > 0) {
@@ -224,7 +225,7 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 				} else {
 					invalido = true;
 				}
-			}			
+			}
 		}
 		while (caracter == ' ') {
 			caracter = getc(archivo);
