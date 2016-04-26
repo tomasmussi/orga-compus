@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include <sys/types.h>
+#include <unistd.h>
+
+#define _POSIX_C_SOURCE 1
+
 #define MAX_DIGITOS 1000
 
 /* ------ Implementacion de funciones de matrices ------- */
@@ -17,6 +22,12 @@ typedef struct matrix {
  * Primitiva implementada en Assembly
  * */
 matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2);
+
+/**
+ * Imprime en el archivo indicado por el file descriptor fd, el string C
+ * apuntado por str, sin incluir su byte nulo de finalizacion.
+ **/
+ssize_t print_string(int fd, char* str);
 
 /* Constructor de matriz.
  * PRE: rows y cols son mayores a 0
@@ -55,22 +66,33 @@ void destroy_matrix(matrix_t* m) {
     }
 }
 
+ssize_t print_string(int fd, char* str) {
+	size_t len = strlen(str);
+	ssize_t b = write(fd, str, len);
+	return b;
+}
+
 /* Imprime la matriz sobre el file pointer fp
  * PRE: la matriz fue creada y el file pointer es valido.
  * POST: la matriz se serealizo en el file pointer
  **/
 int print_matrix(FILE* fp, matrix_t* m) {
+	int fd;
+	char buffer[20];
  	size_t fila, col;
- 	fprintf(fp, "%u ", m->rows);
+ 	fd = fileno(fp);
+ 	sprintf(buffer, "%u ", m->rows);
+ 	print_string(fd, buffer);
 	for (fila=0; fila < m->rows; fila++) {
 		for (col=0; col < m->cols; col++) {
-			fprintf(fp, "%g", m->array[(fila * m->rows) + col]);
+			sprintf(buffer, "%g", m->array[(fila * m->rows) + col]);
+ 			print_string(fd, buffer);
 			if (((fila + 1) != m->rows) || ((col + 1) != m->cols)) {
-				fprintf(fp, " ");
+				print_string(fd, " ");
 			}
 		}
 	}
-	fprintf(fp, "\n");
+	print_string(fd, "\n");
 	return 0;
 }
 
