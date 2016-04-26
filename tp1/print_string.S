@@ -3,8 +3,8 @@
 ##
 ##
 
-## FRAME = 4 (SRA) + 0 (FPA) + 2 (LTA) + 2 (ABA)
-## Memoria = 16 + 0 + 8 + 8 = 32 bytes
+## FRAME = 4 (SRA) + 0 (FPA) + 0 (LTA) + 4 (ABA)
+## Memoria = 16 + 0 + 0 + 16 = 32 bytes
 
 ## SRA (Save Register Area):
 ## 1) ra (Return address)
@@ -18,14 +18,16 @@
 ## 0 REGISTROS
 
 ## LTA (Local and Temporary Area)
-## TODO Determinar cuantos se utilizan
+## No se utilizan registros locales
+## 0 REGISTROS
 
 ## ABA (Argument Building Area)
-## Esta funcion invoca a create matrix que toma dos argumentos de entrada
-## a0: cantidad de filas de la matriz
-## a1: cantidad de columnas de la matriz
-## Esto nos da un ABA de 2 * 4 bytes = 8 bytes (alineado a 8 bytes)
-## 2 REGISTROS
+## Esta funcion invoca a write que toma tres argumentos de entrada
+## a0: file descriptor a escribir
+## a1: puntero a char donde comienza el string
+## a2: cantidad de bytes a escribir desde el string apuntado por a1
+## Esto nos da un ABA de 4 * 4 bytes = 16 bytes (alineado a 8 bytes)
+## 4 REGISTROS
 
 #include <mips/regdef.h>
 #include <sys/syscall.h>
