@@ -66,11 +66,12 @@ void destroy_matrix(matrix_t* m) {
     }
 }
 
+/*
 ssize_t print_string(int fd, char* str) {
 	size_t len = strlen(str);
-	ssize_t b = write(fd, str, len);
-	return b;
+	return write(fd, str, len);
 }
+*/
 
 /* Imprime la matriz sobre el file pointer fp
  * PRE: la matriz fue creada y el file pointer es valido.
