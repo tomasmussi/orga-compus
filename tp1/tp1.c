@@ -18,6 +18,19 @@ typedef struct matrix {
 	double* array;
 } matrix_t;
 
+
+bool invalido(matrix_t* m1, matrix_t* m2) {
+	if (m1 == NULL || m2 == NULL) {
+		fprintf(stderr, "Las matrices son invalidas; no se ha podido realizar la multiplicacion \n");
+		return true;
+	}
+	if (m1->cols != m2->rows) {
+		fprintf(stderr, "Error en las dimensiones; no se ha podido realizar la multiplicacion \n");
+		return true;
+	}
+	return false;
+}
+
 /**
  * Primitiva implementada en Assembly
  * */
@@ -96,6 +109,7 @@ int print_matrix(FILE* fp, matrix_t* m) {
 	print_string(fd, "\n");
 	return 0;
 }
+
 
 /* Multiplica las matrices en m1 y m2
  * PRE: las matrices fueron creadas

@@ -91,7 +91,14 @@ matrix_multiply:
 
 	###### Comienzo de la funcion
 
-	## TODO: comprobar si argumentos son null -----------
+	la t9, invalido		# Verifico si se puede hacer la multiplicacion
+	jal ra, t9
+	move t0, v0			# Copio a t0 el resultado
+	li v0, 0			# m3 = NULL;
+	bnez t0, exit_for1	# if (invalido(m1, m2)) return NULL;
+
+	lw a0, ARG0_POS($fp)
+	lw a1, ARG1_POS($fp)
 
 	## se inicializan las variables
 	lw	t3, 0(a0)		# m1rows = m1->rows;
