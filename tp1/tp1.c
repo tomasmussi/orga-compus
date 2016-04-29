@@ -6,7 +6,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#ifndef
 #define _POSIX_C_SOURCE 1
+#endif
 
 #define MAX_DIGITOS 1000
 
@@ -206,10 +208,12 @@ void multiplicar(int dimension, double *matriz1, double *matriz2) {
 	load_matrix(matrizA, matriz1);
 	load_matrix(matrizB, matriz2);
 	producto = (matrix_t*) matrix_multiply(matrizA, matrizB);
-	print_matrix(stdout, producto);
 	destroy_matrix(matrizA);
 	destroy_matrix(matrizB);
-	destroy_matrix(producto);
+	if (producto != NULL) {
+		print_matrix(stdout, producto);
+		destroy_matrix(producto);
+	}
 }
 
 void leerLinea(FILE* archivo, int* cantidadLineas) {
