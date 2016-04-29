@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifndef
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 1
 #endif
 
