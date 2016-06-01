@@ -70,33 +70,29 @@ int print_matrix(FILE* fp, matrix_t* m) {
 }
 
 /* Multiplica las matrices en m1 y m2
+ * Utiliza algoritmo de multiplicacion para aprovechar la localidad de la 
+ * cache
  * PRE: las matrices fueron creadas
  * POST: retorna una nueva matriz resultado del producto 
  **/
-matrix_t* matrix_multiply(matrix_t* m1, matrix_t* m2) {
-	int i, j, k;
-	matrix_t* m3;	
-	if (m1 == NULL || m2 == NULL) {
-		fprintf(stderr, "Las matrices son invalidas; no se ha podido realizar la multiplicacion \n");
-		return NULL;
-	}
-	if (m1->cols != m2->rows) {
-		fprintf(stderr, "Error en las dimensiones; no se ha podido realizar la multiplicacion \n");
-		return NULL;
-	}
-	/* Se genera una nueva matriz m3 */
-	m3 = create_matrix(m1->rows, m2->cols);	
-
-	for (i=0; i < m1->rows; i++) {
-		for (j=0; j < m2->cols; j++) {
-			double resultado = 0;
-			for (k=0; k < m2->rows; k++) {
-				resultado += m1->array[i * m1->cols + k] * m2->array[k * m2->cols + j];
+void matrix_multiply(matrix_t* m1, matrix_t* m2, matrix_t* mr, int bs) {
+	size_t n, en, i, j, k, kk, jj;
+	double sum;
+	double m1e, m2e;
+	n = m1->rows;
+	en = bs*(n/bs);
+	for(kk=0; kk<en; kk+=bs)
+		for(jj=0; jj<en; jj+=bs)
+			for(i=0; i<n; i++)
+			for(j=jj; j<jj+bs; j++) {
+				sum = mr->array[i*n+j];
+				for(k=kk; k<kk+bs; k++) {
+					m1e = m1->array[i*n+k];
+					m2e = m2->array[k*n+j];
+					sum += m1e * m2e;
+					}
+				mr->array[i*n+j] = sum;
 			}
-			m3->array[i * m2->cols + j] = resultado;
-		}
-	}
-	return m3;
 }
 
 /* Carga la matriz con los elementos pasados por parametro
@@ -123,22 +119,23 @@ void show_help(const char *arg) {
 	}
 }
 
-void multiplicar(int dimension, double *matriz1, double *matriz2) {
+void multiplicar(int dimension, double *matriz1, double *matriz2, int bs) {
 	matrix_t* matrizA;
 	matrix_t* matrizB;
 	matrix_t* producto;
 	matrizA = (matrix_t*) create_matrix(dimension, dimension);
 	matrizB = (matrix_t*) create_matrix(dimension, dimension);
+	producto = (matrix_t*) create_matrix(dimension, dimension);
 	load_matrix(matrizA, matriz1);
 	load_matrix(matrizB, matriz2);
-	producto = (matrix_t*) matrix_multiply(matrizA, matrizB);
+	matrix_multiply(matrizA, matrizB, producto, bs);
 	print_matrix(stdout, producto);
 	destroy_matrix(matrizA);
 	destroy_matrix(matrizB);
 	destroy_matrix(producto);
 }
 
-void leerLinea(FILE* archivo, int* cantidadLineas) {
+void leerLinea(FILE* archivo, int* cantidadLineas, int bs) {
 	int dimension = -1;
 	int elementos = 0;
 	double *matriz1 = NULL;
@@ -206,7 +203,7 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 				caracter = getc(archivo);
 			}
 		} else {
-			multiplicar(dimension, matriz1, matriz2);
+			multiplicar(dimension, matriz1, matriz2, bs);
 		}
 	} else if (dimension == 0) {
 		fprintf(stderr, "La dimension no concuerda con la cantidad de elementos de la linea.\n");
@@ -217,13 +214,15 @@ void leerLinea(FILE* archivo, int* cantidadLineas) {
 
 int main(int argc, char *argv[]) {
 	int cantidadLineas;
-	if (argc != 1) {
-		show_help(argv[1]);
-		return 0;
+	int bs;
+	if (argc != 2) {
+		printf("Se necesita pasar el block size\n");
+		return 1;
 	}
+	bs = atoi(argv[1]);
 	cantidadLineas = 0;
 	while (!feof(stdin)) {
-		leerLinea(stdin, &cantidadLineas);
+		leerLinea(stdin, &cantidadLineas, bs);
 	}
 	return 0;
 }
