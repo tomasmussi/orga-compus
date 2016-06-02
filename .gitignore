@@ -2,3 +2,6 @@ gxemul-6620-20070927/
 
 # Archivos de C
 *.o
+
+# Matrices de 2048 filas x cols
+perf2048_in
