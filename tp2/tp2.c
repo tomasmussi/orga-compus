@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include <time.h>
+
 #define MAX_DIGITOS 1000
 
 /* ------ Implementacion de funciones de matrices ------- */
@@ -15,7 +17,7 @@ typedef struct matrix {
 
 /* Constructor de matriz.
  * PRE: rows y cols son mayores a 0
- * POST: devuelve una matriz vacia 
+ * POST: devuelve una matriz vacia
  **/
 matrix_t* create_matrix(size_t rows, size_t cols) {
 	matrix_t* matriz = (matrix_t*) malloc( sizeof(matrix_t) );
@@ -41,7 +43,7 @@ matrix_t* create_matrix(size_t rows, size_t cols) {
 
 /* Destructor de matriz.
  * PRE: la matriz fue creada.
- * POST: matriz destruida y recursos liberados 
+ * POST: matriz destruida y recursos liberados
  **/
 void destroy_matrix(matrix_t* m) {
     if (m != NULL) {
@@ -52,7 +54,7 @@ void destroy_matrix(matrix_t* m) {
 
 /* Imprime la matriz sobre el file pointer fp
  * PRE: la matriz fue creada y el file pointer es valido.
- * POST: la matriz se serealizo en el file pointer 
+ * POST: la matriz se serealizo en el file pointer
  **/
 int print_matrix(FILE* fp, matrix_t* m) {
  	size_t fila, col;
@@ -70,10 +72,10 @@ int print_matrix(FILE* fp, matrix_t* m) {
 }
 
 /* Multiplica las matrices en m1 y m2
- * Utiliza algoritmo de multiplicacion para aprovechar la localidad de la 
+ * Utiliza algoritmo de multiplicacion para aprovechar la localidad de la
  * cache
  * PRE: las matrices fueron creadas
- * POST: retorna una nueva matriz resultado del producto 
+ * POST: retorna una nueva matriz resultado del producto
  **/
 void matrix_multiply(matrix_t* m1, matrix_t* m2, matrix_t* mr, int bs) {
 	size_t n, en, i, j, k, kk, jj;
@@ -97,7 +99,7 @@ void matrix_multiply(matrix_t* m1, matrix_t* m2, matrix_t* mr, int bs) {
 
 /* Carga la matriz con los elementos pasados por parametro
  * PRE: la matriz fue creada
- * POST: retorna la matriz con los datos cargados  
+ * POST: retorna la matriz con los datos cargados
  **/
 void load_matrix(matrix_t* m, double* elements) {
  	int i;
@@ -123,12 +125,17 @@ void multiplicar(int dimension, double *matriz1, double *matriz2, int bs) {
 	matrix_t* matrizA;
 	matrix_t* matrizB;
 	matrix_t* producto;
+	struct timespec inicio;
+	struct timespec fin;
 	matrizA = (matrix_t*) create_matrix(dimension, dimension);
 	matrizB = (matrix_t*) create_matrix(dimension, dimension);
 	producto = (matrix_t*) create_matrix(dimension, dimension);
 	load_matrix(matrizA, matriz1);
 	load_matrix(matrizB, matriz2);
+	clock_gettime(CLOCK_REALTIME, &inicio);
 	matrix_multiply(matrizA, matrizB, producto, bs);
+	clock_gettime(CLOCK_REALTIME, &fin);
+	printf("Matrix multiply tardo %ld nanosegundos\n", fin.tv_nsec - inicio.tv_nsec);
 	print_matrix(stdout, producto);
 	destroy_matrix(matrizA);
 	destroy_matrix(matrizB);
@@ -142,7 +149,7 @@ void leerLinea(FILE* archivo, int* cantidadLineas, int bs) {
 	double *matriz2 = NULL;
 	int index1 = 0;
 	int index2 = 0;
-	
+
 	char elemento[MAX_DIGITOS];
 	int subindice = 0;
 	char caracter = 'A';
@@ -151,7 +158,7 @@ void leerLinea(FILE* archivo, int* cantidadLineas, int bs) {
 		caracter = getc(archivo);
 		while (caracter != '\n' && caracter != EOF && caracter != ' ') {
 			elemento[subindice++] = caracter;
-			caracter = getc(archivo);			
+			caracter = getc(archivo);
 		}
 		elemento[subindice] = '\0';
 		if (subindice > 0) {
@@ -186,7 +193,7 @@ void leerLinea(FILE* archivo, int* cantidadLineas, int bs) {
 				} else {
 					invalido = true;
 				}
-			}			
+			}
 		}
 		while (caracter == ' ') {
 			caracter = getc(archivo);
@@ -212,9 +219,12 @@ void leerLinea(FILE* archivo, int* cantidadLineas, int bs) {
 	free(matriz2);
 }
 
+
 int main(int argc, char *argv[]) {
 	int cantidadLineas;
 	int bs;
+	struct timespec inicio;
+	struct timespec fin;
 	if (argc != 2) {
 		printf("Se necesita pasar el block size\n");
 		return 1;
@@ -222,7 +232,10 @@ int main(int argc, char *argv[]) {
 	bs = atoi(argv[1]);
 	cantidadLineas = 0;
 	while (!feof(stdin)) {
+		clock_gettime(CLOCK_REALTIME, &inicio);
 		leerLinea(stdin, &cantidadLineas, bs);
+		clock_gettime(CLOCK_REALTIME, &fin);
+		printf("Linea entera tardo %ld nanosegundos\n", fin.tv_nsec - inicio.tv_nsec);
 	}
 	return 0;
 }
