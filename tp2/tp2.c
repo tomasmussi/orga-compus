@@ -90,7 +90,7 @@ void matrix_multiply(matrix_t* m1, matrix_t* m2, matrix_t* mr, int bs) {
 					m1e = m1->array[i*n+k];
 					m2e = m2->array[k*n+j];
 					sum += m1e * m2e;
-					}
+				}
 				mr->array[i*n+j] = sum;
 			}
 }

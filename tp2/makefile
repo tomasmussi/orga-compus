@@ -1,11 +1,11 @@
 # NOMBRE DEL EJECUTABLE DEL TP
 EXEC = tp2
 CC = gcc
-CFLAGS = -Wall -Werror -pedantic -std=c99 -g
+CFLAGS = -Wall -Werror -pedantic -ansi -std=c99 -g -O0
 BIN = $(filter-out $(EXEC).c, $(wildcard *.c))
 BINFILES = $(BIN:.c=.o)
 
-all: clean main todo-test
+all: clean main
 
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c $<
