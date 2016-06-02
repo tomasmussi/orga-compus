@@ -23,8 +23,9 @@ def generarResultado(tam):
 	return linea
 	
 def main():
-	m = generarResultado(256)
-	print m
+	for i in xrange(6):
+		m = generarInput(2048)
+		print m
 
 	
 if __name__ == "__main__":
