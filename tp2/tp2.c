@@ -6,6 +6,7 @@
 #include <time.h>
 
 #define MAX_DIGITOS 1000
+#define NANO 1000000000L
 
 /* ------ Implementacion de funciones de matrices ------- */
 
@@ -122,6 +123,7 @@ void show_help(const char *arg) {
 }
 
 void multiplicar(int dimension, double *matriz1, double *matriz2, int bs) {
+	long elapsed;
 	matrix_t* matrizA;
 	matrix_t* matrizB;
 	matrix_t* producto;
@@ -132,10 +134,13 @@ void multiplicar(int dimension, double *matriz1, double *matriz2, int bs) {
 	producto = (matrix_t*) create_matrix(dimension, dimension);
 	load_matrix(matrizA, matriz1);
 	load_matrix(matrizB, matriz2);
+	memset(&inicio, 0, sizeof(struct timespec));
+	memset(&fin, 0, sizeof(struct timespec));
 	clock_gettime(CLOCK_REALTIME, &inicio);
 	matrix_multiply(matrizA, matrizB, producto, bs);
 	clock_gettime(CLOCK_REALTIME, &fin);
-	printf("Matrix multiply tardo %ld nanosegundos\n", fin.tv_nsec - inicio.tv_nsec);
+	elapsed = (fin.tv_sec - inicio.tv_sec) * NANO;
+	printf("Matrix multiply tardo %ld nanosegundos\n", elapsed + fin.tv_nsec - inicio.tv_nsec);
 	print_matrix(stdout, producto);
 	destroy_matrix(matrizA);
 	destroy_matrix(matrizB);
@@ -221,6 +226,7 @@ void leerLinea(FILE* archivo, int* cantidadLineas, int bs) {
 
 
 int main(int argc, char *argv[]) {
+	long elapsed;
 	int cantidadLineas;
 	int bs;
 	struct timespec inicio;
@@ -232,10 +238,13 @@ int main(int argc, char *argv[]) {
 	bs = atoi(argv[1]);
 	cantidadLineas = 0;
 	while (!feof(stdin)) {
+		memset(&inicio, 0, sizeof(struct timespec));
+		memset(&fin, 0, sizeof(struct timespec));
 		clock_gettime(CLOCK_REALTIME, &inicio);
 		leerLinea(stdin, &cantidadLineas, bs);
 		clock_gettime(CLOCK_REALTIME, &fin);
-		printf("Linea entera tardo %ld nanosegundos\n", fin.tv_nsec - inicio.tv_nsec);
+		elapsed = (fin.tv_sec - inicio.tv_sec) * NANO;
+		printf("Linea entera tardo %ld nanosegundos\n", elapsed + fin.tv_nsec - inicio.tv_nsec);
 	}
 	return 0;
 }
